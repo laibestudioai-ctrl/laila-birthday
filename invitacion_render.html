@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Invitación 2º Cumpleaños Laila</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@700&family=Great+Vibes&family=Montserrat:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;1,400;1,600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Quicksand', sans-serif;
+    }
+    #canvas-container {
+      position: relative;
+      width: 576px;
+      height: 1024px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      background: #fff;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="invitationCanvas" width="1152" height="2048"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('invitationCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;  // 1152 (2x for crisp print & mobile)
+    const H = canvas.height; // 2048
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = 'public/img/plantilla_original.jpg';
+
+    img.onload = () => {
+      // 1. Draw original template to high-res canvas
+      ctx.drawImage(img, 0, 0, W, H);
+
+      // 2. High-speed inpainting to remove the old text
+      // Scale factor is 2x
+      const scale = 2;
+      const regions = [
+        { x: 160 * scale, y: 320 * scale, w: 270 * scale, h: 90 * scale },   // Amanda
+        { x: 130 * scale, y: 405 * scale, w: 290 * scale, h: 50 * scale },   // celebra su primer anito
+        { x: 125 * scale, y: 455 * scale, w: 285 * scale, h: 75 * scale },   // Veni a merendar...
+        { x: 180 * scale, y: 530 * scale, w: 220 * scale, h: 145 * scale },  // Event box (29/05, 15hs, Camping)
+        { x: 130 * scale, y: 675 * scale, w: 310 * scale, h: 65 * scale },   // Tu presencia hara...
+        { x: 160 * scale, y: 738 * scale, w: 260 * scale, h: 48 * scale }    // Te esperamos
+      ];
+
+      const imgData = ctx.getImageData(0, 0, W, H);
+      const data = imgData.data;
+
+      // Inpaint each region by blending text pixels into background
+      regions.forEach(r => {
+        for (let y = r.y; y < r.y + r.h; y++) {
+          for (let x = r.x; x < r.x + r.w; x++) {
+            const idx = (y * W + x) * 4;
+            const rVal = data[idx];
+            const gVal = data[idx + 1];
+            const bVal = data[idx + 2];
+            
+            // Calculate luminance and color difference
+            const lum = 0.299 * rVal + 0.587 * gVal + 0.114 * bVal;
+            // Text is distinctly darker than the pastel cloud background (lum < 235)
+            // or has distinct brown/burgundy tint
+            if (lum < 238 || (rVal - gVal > 40 && lum < 245)) {
+              // Replace with smooth local background tone (soft creamy baby-pink)
+              // Gradient calculation based on vertical position
+              const t = (y - 300 * scale) / (500 * scale);
+              const targetR = Math.round(254 - t * 8);
+              const targetG = Math.round(244 - t * 14);
+              const targetB = Math.round(246 - t * 12);
+
+              data[idx] = targetR;
+              data[idx + 1] = targetG;
+              data[idx + 2] = targetB;
+            }
+          }
+        }
+      });
+
+      // Put cleaned data back
+      ctx.putImageData(imgData, 0, 0);
+
+      // Now add subtle artistic blending & fairy dust sparkles to make it 100% seamless
+      // 3. Render New Typography with Disney Minnie Chic Style
+      document.fonts.ready.then(() => {
+        renderInvitationText();
+      });
+    };
+
+    function renderInvitationText() {
+      const scale = 2;
+      const centerX = W / 2;
+
+      // Color Palette
+      const rosePrimary = '#cf5080';      // Vibrant Minnie Rose
+      const roseDeep = '#a63363';         // Deep calligraphy rose
+      const textMuted = '#6b4f59';        // Elegant dark mauve for readable body
+      const goldAccent = '#d49b55';       // Subtle gold sparkle
+
+      // Subtle glitter sparkle dots in the cleared center
+      ctx.save();
+      for (let i = 0; i < 45; i++) {
+        const sx = (150 + Math.random() * 276) * scale;
+        const sy = (330 + Math.random() * 450) * scale;
+        const radius = (1 + Math.random() * 2) * scale;
+        ctx.fillStyle = `rgba(255, 235, 185, ${0.4 + Math.random() * 0.5})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // --- 1. NAME: "Laila" ---
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Drop shadow for "Laila"
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+      ctx.shadowBlur = 12 * scale;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2 * scale;
+
+      ctx.font = `italic 700 ${88 * scale}px 'Alex Brush', 'Great Vibes', cursive`;
+      
+      // Gradient fill for Laila
+      const grad = ctx.createLinearGradient(centerX - 150 * scale, 370 * scale, centerX + 150 * scale, 370 * scale);
+      grad.addColorStop(0, '#d15384');
+      grad.addColorStop(0.5, '#e66b9d');
+      grad.addColorStop(1, '#cb497c');
+      ctx.fillStyle = grad;
+      ctx.fillText('Laila', centerX, 375 * scale);
+      ctx.restore();
+
+      // --- 2. SUBTITLE: "celebra su segundo añito" + hearts ---
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.font = `italic 600 ${23 * scale}px 'Playfair Display', serif`;
+      ctx.fillStyle = '#b04373';
+      ctx.fillText('celebra su segundo añito  🩷', centerX + 4 * scale, 432 * scale);
+      ctx.restore();
+
+      // --- 3. INVITATION MESSAGE: "Ven a compartir una tarde divertida..." ---
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.font = `italic 500 ${18.5 * scale}px 'Playfair Display', serif`;
+      ctx.fillStyle = textMuted;
+      ctx.fillText('Ven a compartir una tarde divertida', centerX, 482 * scale);
+      ctx.fillText('de juegos y merienda', centerX, 510 * scale);
+      ctx.restore();
+
+      // --- 4. EVENT DETAILS BOX (Date, Time, Location) ---
+      const boxLeft = 188 * scale;
+      const boxY = 548 * scale;
+
+      // Date icon & text
+      drawCalendarIcon(boxLeft - 18 * scale, boxY - 2 * scale, 17 * scale);
+      ctx.save();
+      ctx.font = `700 ${22 * scale}px 'Quicksand', sans-serif`;
+      ctx.fillStyle = '#a63b6a';
+      ctx.textAlign = 'left';
+      ctx.fillText('07 / 11 / 2026', boxLeft + 12 * scale, boxY);
+      ctx.restore();
+
+      // Time icon & text
+      const timeY = boxY + 40 * scale;
+      drawClockIcon(boxLeft - 18 * scale, timeY - 2 * scale, 17 * scale);
+      ctx.save();
+      ctx.font = `700 ${21 * scale}px 'Quicksand', sans-serif`;
+      ctx.fillStyle = '#a63b6a';
+      ctx.textAlign = 'left';
+      ctx.fillText('17:30 h', boxLeft + 12 * scale, timeY);
+      ctx.restore();
+
+      // Location icon & text
+      const locY = timeY + 42 * scale;
+      drawLocationIcon(boxLeft - 18 * scale, locY + 4 * scale, 18 * scale);
+      ctx.save();
+      ctx.textAlign = 'left';
+      ctx.font = `700 ${18.5 * scale}px 'Quicksand', sans-serif`;
+      ctx.fillStyle = '#8b2e56';
+      ctx.fillText('El Parque de Beltrán', boxLeft + 12 * scale, locY - 4 * scale);
+
+      ctx.font = `500 ${13 * scale}px 'Quicksand', sans-serif`;
+      ctx.fillStyle = '#7a5a67';
+      ctx.fillText('C/ Pedro de Valdivia 2', boxLeft + 12 * scale, locY + 16 * scale);
+      ctx.fillText('Arroyo de la Encomienda', boxLeft + 12 * scale, locY + 34 * scale);
+      ctx.restore();
+
+      // --- 5. EMOTIONAL PHRASE ---
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.font = `italic 500 ${18 * scale}px 'Playfair Display', serif`;
+      ctx.fillStyle = textMuted;
+      ctx.fillText('Tu presencia hará este día aún', centerX, 698 * scale);
+      ctx.fillText('más especial  ✨', centerX, 724 * scale);
+      ctx.restore();
+
+      // --- 6. RSVP & TE ESPERAMOS ---
+      ctx.save();
+      ctx.textAlign = 'center';
+
+      // ¡Te esperamos!
+      ctx.font = `italic 700 ${23 * scale}px 'Dancing Script', cursive`;
+      ctx.fillStyle = '#d14f82';
+      ctx.fillText('🩷  ¡Te esperamos!  🩷', centerX, 756 * scale);
+
+      // Confirmar asistencia
+      ctx.font = `600 ${14.5 * scale}px 'Quicksand', sans-serif`;
+      ctx.fillStyle = '#6d4b58';
+      ctx.fillText('Confirmar asistencia a:', centerX, 786 * scale);
+
+      ctx.font = `700 ${17 * scale}px 'Quicksand', sans-serif`;
+      ctx.fillStyle = '#b03369';
+      ctx.fillText('616 88 55 07 (Natalia)', centerX, 808 * scale);
+      ctx.restore();
+
+      console.log('RENDER_COMPLETE');
+    }
+
+    // Helper Cute Icons matching the template aesthetic
+    function drawCalendarIcon(x, y, size) {
+      ctx.save();
+      ctx.strokeStyle = '#d66896';
+      ctx.fillStyle = '#fceaf1';
+      ctx.lineWidth = 2 * 2;
+      ctx.lineJoin = 'round';
+      // calendar body
+      ctx.fillRect(x - size/2, y - size/2, size, size);
+      ctx.strokeRect(x - size/2, y - size/2, size, size);
+      // calendar header bar
+      ctx.fillStyle = '#e87ba7';
+      ctx.fillRect(x - size/2, y - size/2, size, size * 0.35);
+      // dots
+      ctx.fillStyle = '#d66896';
+      const dotR = 1.5 * 2;
+      ctx.beginPath();
+      ctx.arc(x - 3 * 2, y + 2 * 2, dotR, 0, Math.PI*2);
+      ctx.arc(x + 3 * 2, y + 2 * 2, dotR, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawClockIcon(x, y, size) {
+      ctx.save();
+      ctx.strokeStyle = '#d66896';
+      ctx.fillStyle = '#fceaf1';
+      ctx.lineWidth = 2 * 2;
+      ctx.beginPath();
+      ctx.arc(x, y, size/2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      // hands
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y - size/3.2);
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + size/3.8, y);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawLocationIcon(x, y, size) {
+      ctx.save();
+      ctx.fillStyle = '#e06b9b';
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1 * 2;
+      ctx.beginPath();
+      ctx.arc(x, y - size/4, size/2.5, 0, Math.PI * 2);
+      ctx.fill();
+      // pin bottom tip
+      ctx.beginPath();
+      ctx.moveTo(x - size/2.8, y - size/6);
+      ctx.lineTo(x, y + size/2.2);
+      ctx.lineTo(x + size/2.8, y - size/6);
+      ctx.fillStyle = '#e06b9b';
+      ctx.fill();
+      // inner white circle
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(x, y - size/4, size/5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  </script>
+</body>
+</html>
