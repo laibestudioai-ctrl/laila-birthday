@@ -1,0 +1,3 @@
+file 'C:/Users/NuevoNatal/Documents/antigravity/cumpleaños_laila/public/video/c1_envelope.mp4'
+file 'C:/Users/NuevoNatal/Documents/antigravity/cumpleaños_laila/public/video/c2_forest.mp4'
+file 'C:/Users/NuevoNatal/Documents/antigravity/cumpleaños_laila/public/video/c3_paper.mp4'

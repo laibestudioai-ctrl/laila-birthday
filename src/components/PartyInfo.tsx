@@ -101,6 +101,61 @@ export const PartyInfo: React.FC = () => {
         </div>
       </div>
 
+      {/* Magical Animated Video Invitation Showcase */}
+      <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 rounded-3xl p-5 border border-pink-200/90 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🎬</span>
+            <div>
+              <h3 className="font-bold text-stone-900 text-sm sm:text-base">
+                Vídeo Mágico: El Cuento de Laila
+              </h3>
+              <p className="text-[11px] text-stone-500">
+                Sobre encantado con mariposas, bosque y carta final
+              </p>
+            </div>
+          </div>
+          <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700">
+            Vídeo MP4 HD
+          </span>
+        </div>
+
+        {/* Video Player */}
+        <div className="relative rounded-2xl overflow-hidden shadow-md border border-purple-200/70 bg-stone-900 aspect-[9/16] max-h-[520px] mx-auto">
+          <video
+            src="/video/invitacion_laila_magica.mp4"
+            controls
+            playsInline
+            preload="metadata"
+            poster="/img/laila_bosque_encantado.png"
+            className="w-full h-full object-cover"
+          >
+            Tu navegador no soporta reproducción de vídeo HTML5.
+          </video>
+        </div>
+
+        {/* Video Action Buttons */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+          <a
+            href="/video_story.html"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-purple-600 text-white font-semibold text-xs shadow-xs hover:bg-purple-700 transition-colors"
+          >
+            <span>✨ Ver Cuento Interactivo Web</span>
+          </a>
+
+          <a
+            href="/video/invitacion_laila_magica.mp4"
+            download="Invitacion_Magica_Laila_2_Añitos.mp4"
+            className="inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white text-purple-700 border border-purple-200 font-semibold text-xs hover:bg-purple-50 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            <span>Descargar Vídeo MP4</span>
+          </a>
+        </div>
+      </div>
+
       {/* Details grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="bg-white rounded-2xl p-4 border border-stone-200/80 shadow-xs flex items-start gap-3">
