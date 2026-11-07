@@ -72,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative inline-block mb-3">
           <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-gradient-to-tr from-rose-400 via-amber-300 to-pink-500 shadow-xl shadow-rose-200/50 mx-auto">
             <img
-              src="https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?auto=format&fit=crop&w=400&q=80"
+              src="/photos/timeline/laila_recuerdo_30.jpg"
               alt="Laila"
               className="w-full h-full object-cover rounded-full border-2 border-white"
             />
